@@ -1,0 +1,15 @@
+# domain: {{domain}}
+# public: /home/{{adminUsername}}/sites/{{domain}}/
+<VirtualHost *:80>
+  # Admin email, Server Name (domain name) and any aliases
+  ServerAdmin {{adminEmail}}
+  ServerName  www.{domain}}
+  ServerAlias {domain}}
+  # Index file and Document Root (where the public files are located)
+  DirectoryIndex index.php index.html
+  DocumentRoot /home/{{adminUsername}}/sites/{{domain}}/public
+  # Custom log file locations
+  LogLevel warn
+  ErrorLog  /home/{{adminUsername}}/sites/{{domain}}/log/error.log
+  CustomLog /home/{{adminUsername}}/sites/{{domain}}/log/access.log combined
+</VirtualHost>
