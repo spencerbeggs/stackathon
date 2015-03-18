@@ -5,6 +5,8 @@ var async = require("async");
 var lib = require("../lib");
 var fs = require("fs");
 var request = require("request");
+var nconf = require("nconf");
+nconf.file(process.env.HOME + "/.stackathon");
 
 module.exports = function() {
 
@@ -13,7 +15,7 @@ module.exports = function() {
 			digitalOceanApiKey: {
 				description: "Digital Ocean API key:",
 				required: true,
-				default: process.env.DIGITAL_OCEAN_API_KEY
+				default: nconf.get("digitalOcean:apiKey")
 			}
 		}
 
