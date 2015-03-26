@@ -1,1 +1,1 @@
-# Install WordPress on Digital Ocean
+# Stackathon

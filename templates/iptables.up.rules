@@ -5,6 +5,8 @@
 -A OUTPUT -j ACCEPT
 -A INPUT -p tcp --dport 80 -j ACCEPT
 -A INPUT -p tcp --dport 443 -j ACCEPT
+-A INPUT -p tcp --sport 80 -j ACCEPT
+-A INPUT -p tcp --sport 443 -j ACCEPT
 -A INPUT -p tcp -m state --state NEW --dport {{port}} -j ACCEPT
 -A INPUT -p icmp -m icmp --icmp-type 8 -j ACCEPT
 -A INPUT -m limit --limit 5/min -j LOG --log-prefix "iptables denied: " --log-level 7
@@ -12,4 +14,8 @@
 -A FORWARD -j REJECT
 -I INPUT -p tcp --dport 3306 -m state --state NEW,ESTABLISHED -j ACCEPT
 -I OUTPUT -p tcp --sport 3306 -m state --state ESTABLISHED -j ACCEPT
+-A FORWARD -i docker0 -o eth0 -j ACCEPT
+-A FORWARD -i eth0 -o docker0 -j ACCEPT
+-A FORWARD -i docker0 -o eth0 -j ACCEPT
+-A FORWARD -i eth0 -o docker0 -j ACCEPT
 COMMIT
