@@ -17,6 +17,7 @@
 	"smarttabs": true,
 	"strict": true,
 	"scripturl": true,
+	"esnext": true,
 	"globals": {
 		"define": true,
 		"console": true,

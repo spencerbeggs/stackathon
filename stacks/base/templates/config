@@ -1,0 +1,7 @@
+# {{name}} config
+Host {{host}}
+Hostname {{ip}}
+Port {{port}}
+User {{username}}
+IdentityFile {{keyPath}}
+# {{name}} config
