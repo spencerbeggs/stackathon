@@ -3,5 +3,5 @@ Host {{host}}
 Hostname {{ip}}
 Port {{port}}
 User {{username}}
-IdentityFile {{keyPath}}
+IdentityFile {{path}}
 # {{name}} config

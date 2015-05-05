@@ -25,7 +25,7 @@ PrintMotd no
 PrintLastLog yes
 TCPKeepAlive yes
 UseDNS no
-AllowUsers {{adminUsername}}
+AllowUsers {{username}}
 AcceptEnv LANG LC_*
 Subsystem sftp /usr/lib/openssh/sftp-server
 UsePAM yes
