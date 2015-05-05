@@ -121,26 +121,29 @@ function* create() {
 			"chmod 600 /home/" + prompt2.history("username").value + "/.ssh/authorized_keys",
 			"chown -R " + prompt2.history("username").value + ":" + prompt2.history("username").value + " /home/" + prompt2.history("username").value + "/.ssh",
 			"chown " + prompt2.history("username").value + ":wheel /home/" + prompt2.history("username").value + "/.ssh/authorized_keys",
-			"rm /home/" + prompt2.history("username").value + "/sudoers.sh",
-			"service docker restart",
-			"service ssh reload"
+
 		];
 		stack.run(commands).then(function() {
-			stack.sendFiles()
-
-			stack.sendFile("/etc/network/if-pre-up.d/iptables"),
-				stack.sendFile("/etc/iptables.up.rules", {
+			stack.sendFiles([
+				"/etc/network/if-pre-up.d/iptables", ["/etc/iptables.up.rules", {
 					port: prompt2.history("port").value
-				}),
-				stack.sendFile("/etc/ssh/sshd_config", {
+				}],
+				["/etc/ssh/sshd_config", {
 					port: prompt2.history("port").value,
 					username: prompt2.history("username").value
-				}),
-				stack.sendFile("/home/" + prompt2.history("username").value + "/sudoers.sh"),
+				}],
+				"/home/" + prompt2.history("username").value + "/sudoers.sh"
+			]).then(function() {
+				stack.run(["rm /home/" + prompt2.history("username").value + "/sudoers.sh",
+					"service docker restart",
+					"service ssh reload"
+				]).then(function() {
+					console.log("base stack finsihed");
+					stack.server.ssh.username = prompt2.history("username").value;
+					stack.server.ssh.port = prompt2.history("port").value;
+				});
+			});
 
-				console.log("base stack finsihed");
-			stack.server.ssh.username = prompt2.history("username").value;
-			stack.server.ssh.port = prompt2.history("port").value;
 		});
 	});
 }
