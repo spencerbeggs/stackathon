@@ -149,9 +149,6 @@ function* create() {
 }
 
 function* mainMenu() {
-	console.log("*************************************");
-	console.log("* Stackathon: Don't Worry, Be Hacky *");
-	console.log("*************************************\n");
 	console.log("What do you want to do?");
 	console.log("  [1] Make a new stack");
 	console.log("  [2] Delete a stack");
@@ -214,6 +211,10 @@ function* stackathon() {
 	}
 }
 
+console.log("*************************************");
+console.log("* Stackathon: Don't Worry, Be Hacky *");
+console.log("*************************************\n");
+
 client.on("ready", function() {
-	client.init().then(run(stackathon));
+	run(stackathon);
 });
