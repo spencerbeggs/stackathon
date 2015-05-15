@@ -46,7 +46,7 @@ function* create() {
 		},
 		password: {
 			description: "Admin password:",
-			pattern: /^[a-zA-Z0-9_\s-]+$/,
+			pattern: /^[a-zA-Z0-9_&#$%^*\s-]+$/,
 			required: true,
 			default: passwordGenerator(25, false)
 		}
@@ -64,7 +64,11 @@ function* create() {
 				required: false
 			}
 		});
-		domain = client.domains[parseInt(prompt2.history("domainNum").value, 10) - 1].Name;
+		if (prompt2.history("domainNum").value.indexOf(".") !== -1) {
+			domain = prompt2.history("domainNum").value;
+		} else {
+			domain = client.domains[parseInt(prompt2.history("domainNum").value, 10) - 1].Name;
+		}
 	} else {
 		yield p2({
 			name: {
@@ -102,28 +106,24 @@ function* create() {
 		subdomain: subdomain ? subdomain : null
 	});
 	stack.once("ready", function() {
+		console.log("+++");
 		var commands = [
 			"export EDITOR=/usr/bin/nano",
 			"mkdir -p /home/" + prompt2.history("username").value + "/.ssh",
-			"echo \"" + stack.keys().public + "\" \> /home/" + prompt2.history("username").value + "/.ssh/authorized_keys",
-			"/sbin/iptables -F",
-			"/sbin/iptables-restore < /etc/iptables.up.rules",
+			"echo \"" + stack.keys().public.replace("\n", "") + "\" \> /home/" + prompt2.history("username").value + "/.ssh/authorized_keys",
 			"/usr/sbin/useradd " + prompt2.history("username").value,
 			"/usr/sbin/groupadd wheel",
 			"echo \"" + prompt2.history("username").value + ":" + prompt2.history("password").value + "\" | chpasswd",
 			"/usr/sbin/usermod -a -G wheel " + prompt2.history("username").value,
 			"/usr/sbin/usermod -a -G docker " + prompt2.history("username").value,
 			"chmod a+rx /home/" + prompt2.history("username").value,
-			"chown -R " + prompt2.history("username").value + ":" + prompt2.history("username").value + " ~" + prompt2.history("username").value + "/.ssh",
-			"chmod +x /home/" + prompt2.history("username").value + "/sudoers.sh",
-			"/home/" + prompt2.history("username").value + "/sudoers.sh",
+			"chown -R " + prompt2.history("username").value + ":wheel /home/" + prompt2.history("username").value,
 			"chmod 700 /home/" + prompt2.history("username").value + "/.ssh",
 			"chmod 600 /home/" + prompt2.history("username").value + "/.ssh/authorized_keys",
-			"chown -R " + prompt2.history("username").value + ":" + prompt2.history("username").value + " /home/" + prompt2.history("username").value + "/.ssh",
-			"chown " + prompt2.history("username").value + ":wheel /home/" + prompt2.history("username").value + "/.ssh/authorized_keys",
-
+			"exit"
 		];
 		stack.run(commands).then(function() {
+			console.log("[STACK] Initialized");
 			stack.sendFiles([
 				"/etc/network/if-pre-up.d/iptables", ["/etc/iptables.up.rules", {
 					port: prompt2.history("port").value
@@ -134,16 +134,29 @@ function* create() {
 				}],
 				"/home/" + prompt2.history("username").value + "/sudoers.sh"
 			]).then(function() {
-				stack.run(["rm /home/" + prompt2.history("username").value + "/sudoers.sh",
+				console.log("[STACK] Uploads finished");
+				stack.run([
+					"chmod +x /home/" + prompt2.history("username").value + "/sudoers.sh",
+					"/home/" + prompt2.history("username").value + "/sudoers.sh",
+					"rm /home/" + prompt2.history("username").value + "/sudoers.sh",
+					"/sbin/iptables -F",
+					"/sbin/iptables-restore < /etc/iptables.up.rules",
 					"service docker restart",
-					"service ssh reload"
+					"service ssh reload",
+					"exit"
 				]).then(function() {
-					console.log("base stack finsihed");
+					console.log("[STACK] Base stack configured");
 					stack.server.ssh.username = prompt2.history("username").value;
 					stack.server.ssh.port = prompt2.history("port").value;
+					stack.save();
+				}).catch(function(err) {
+					self.emit("error", err);
 				});
+			}).catch(function(err) {
+				self.emit("error", err);
 			});
-
+		}).catch(function(err) {
+			self.emit("error", err);
 		});
 	});
 }
@@ -165,7 +178,7 @@ function* mainMenu() {
 
 function* destroy() {
 	console.log("Which stack do you want to delete?");
-	var builtStacks = _.values(client.load().stacks);
+	var builtStacks = _.values(client.stacks);
 	_.each(builtStacks, function(stack, i) {
 		console.log("  [" + (i + 1) + "] " + stack.name);
 	});

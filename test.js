@@ -1,13 +1,11 @@
 var Stack = require("./lib/stack");
 var fs = require("fs");
-var stack = new Stack("kiq.io");
+var stack = new Stack("savvy.nyc");
 var SSH2Shell = require("SSH2Shell");
 
 stack.on("ready", function() {
 	var self = stack;
-	stack.sendFiles("/home/root/sudoers.sh").then(function() {
-		console.log("done");
-	}).catch(function(err) {
-		console.log(err);
-	});
+	stack.sendFiles([
+		"/home/spencer/sudoers.sh"
+	]);
 });
