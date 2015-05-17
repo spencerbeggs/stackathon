@@ -9,21 +9,44 @@ var p2 = require("./lib/prompt");
 var prompt2 = require("prompt");
 var passwordGenerator = require("password-generator");
 var run = require("gen-run");
+var fs = require("fs");
 
-prompt2.message = "";
-prompt2.delimiter = "";
+prompt2.message = "   ".red;
+prompt2.delimiter = "   ".red;
 prompt2.start();
+
+var defaults = {
+	services: {
+		digitalOcean: {
+			key: null
+		},
+		namecheap: {
+			username: null,
+			key: null
+		}
+	},
+	stacks: {}
+};
+
+try {
+	JSON.parse(fs.readFileSync(process.env.HOME + "/.stackathon"), {
+		encoding: "utf8"
+	});
+} catch (err) {
+	fs.writeFileSync(process.env.HOME + "/.stackathon", JSON.stringify(_.clone(defaults), null, "\t"));
+}
 
 var client = new Client();
 
 function* create() {
-	console.log("What kind of stack do you want to create?");
+	console.log("What kind of stack do you want to create?".yellow);
 	_.each(stacks, function(stack, i) {
-		console.log("  [" + (i + 1) + "] " + stack.name);
+		var item = "  [" + (i + 1) + "] " + stack.name;
+		console.log(item.blue);
 	});
 	yield p2({
 		type: {
-			description: "number:",
+			description: "number:".red,
 			pattern: /[0-9]/,
 			required: true,
 			default: "1"
@@ -33,19 +56,19 @@ function* create() {
 	var type = stacks[parseInt(prompt2.history("type").value, 10) - 1];
 	yield p2({
 		port: {
-			description: "shh port:",
+			description: "shh port:".red,
 			pattern: /^[0-9\s-]+$/,
 			required: true,
-			default: "7070"
+			default: "7676"
 		},
 		username: {
-			description: "Admin username:",
+			description: "Admin username:".red,
 			pattern: /^[a-zA-Z\s-]+$/,
 			required: true,
 			default: "admin"
 		},
 		password: {
-			description: "Admin password:",
+			description: "Admin password:".red,
 			pattern: /^[a-zA-Z0-9_&#$%^*\s-]+$/,
 			required: true,
 			default: passwordGenerator(25, false)
@@ -58,13 +81,13 @@ function* create() {
 		});
 		yield p2({
 			domainNum: {
-				description: "domain (optional):",
+				description: "domain (optional):".red,
 				pattern: /^[a-zA-Z0-9.\s-]+$/,
-				message: "Name must be only letters, spaces, or dashes",
+				message: "Name be number or valid domain",
 				required: false
 			}
 		});
-		if (prompt2.history("domainNum").value.indexOf(".") !== -1) {
+		if (_.isNaN(parseInt(prompt2.history("domainNum").value, 10))) {
 			domain = prompt2.history("domainNum").value;
 		} else {
 			domain = client.domains[parseInt(prompt2.history("domainNum").value, 10) - 1].Name;
@@ -72,7 +95,7 @@ function* create() {
 	} else {
 		yield p2({
 			name: {
-				description: "project name:",
+				description: "project name:".red,
 				pattern: /^[a-zA-Z.\s-]+$/,
 				message: "Name must be only letters, spaces, or dashes",
 				required: false,
@@ -84,7 +107,7 @@ function* create() {
 	if (domain) {
 		yield p2({
 			subdomain: {
-				description: "subdomain (optional):",
+				description: "subdomain (optional):".red,
 				pattern: /^[a-zA-Z.\s-]+$/,
 				message: "Name must be only letters, spaces, or dashes",
 				required: false
@@ -103,7 +126,8 @@ function* create() {
 	var stack = new Stack({
 		name: hostname ? hostname : name,
 		domain: domain ? domain : null,
-		subdomain: subdomain ? subdomain : null
+		subdomain: subdomain ? subdomain : null,
+		key: client.services.digitalOcean.key
 	});
 	stack.once("ready", function() {
 		console.log("+++");
@@ -150,25 +174,25 @@ function* create() {
 					stack.server.ssh.port = prompt2.history("port").value;
 					stack.save();
 				}).catch(function(err) {
-					self.emit("error", err);
+					stack.emit("error", err);
 				});
 			}).catch(function(err) {
-				self.emit("error", err);
+				stack.emit("error", err);
 			});
 		}).catch(function(err) {
-			self.emit("error", err);
+			stack.emit("error", err);
 		});
 	});
 }
 
 function* mainMenu() {
-	console.log("What do you want to do?");
-	console.log("  [1] Make a new stack");
-	console.log("  [2] Delete a stack");
-	console.log("  [3] Reset credentials");
+	console.log("What do you want to do?".yellow);
+	console.log("  [1] Make a new stack".blue);
+	console.log("  [2] Delete a stack".blue);
+	console.log("  [3] Reset credentials".blue);
 	yield p2({
 		action: {
-			description: "number:",
+			description: "number:".red,
 			pattern: /[1-3]/,
 			required: true,
 			default: "1"
@@ -224,10 +248,11 @@ function* stackathon() {
 	}
 }
 
-console.log("*************************************");
-console.log("* Stackathon: Don't Worry, Be Hacky *");
-console.log("*************************************\n");
+console.log("*************************************".rainbow);
+console.log("* Stackathon: Don't Worry, Be Hacky *".rainbow);
+console.log("*************************************".rainbow);
 
 client.on("ready", function() {
 	run(stackathon);
 });
+// trivial
