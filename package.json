@@ -1,7 +1,7 @@
 {
 	"name": "stackathon",
 	"version": "1.0.0",
-	"description": "Command-line program for quickly building and deploying server and DNS configurations with Digital Ocean and Namecheap.",
+	"description": "A command-line program for quickly building and deploying server and DNS configurations with Digital Ocean and Namecheap.",
 	"main": "index.js",
 	"scripts": {
 		"reinstall": "rm -rf node_modules;npm install",
@@ -27,7 +27,6 @@
 		"lodash": "^3.5.0",
 		"moniker": "^0.1.2",
 		"password-generator": "^0.2.3",
-		"password-maker": "^1.0.5",
 		"prompt": "^0.2.14",
 		"request": "^2.53.0",
 		"ssh-keygen": "^0.2.1",
