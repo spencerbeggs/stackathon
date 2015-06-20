@@ -26,7 +26,7 @@
 		"preserve_newlines": true
 	},
 	"css": {
-		"indent_character": "\t",
+		"indent_char": "\t",
 		"indent_size": 1
 	}
 }
