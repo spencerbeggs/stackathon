@@ -10,6 +10,13 @@ var prompt2 = require("prompt");
 var passwordGenerator = require("password-generator");
 var run = require("gen-run");
 var fs = require("fs");
+var program = require("commander");
+var pjson = require("./package.json");
+
+program
+	.version(pjson.version)
+	.option("-v, --verbose", "Logs more information to the console for debugging.")
+	.parse(process.argv);
 
 prompt2.message = "   ".red;
 prompt2.delimiter = "   ".red;
@@ -127,10 +134,10 @@ function* create() {
 		name: hostname ? hostname : name,
 		domain: domain ? domain : null,
 		subdomain: subdomain ? subdomain : null,
-		key: client.services.digitalOcean.key
+		digitalOcean: client.services.digitalOcean,
+		namecheap: client.services.namecheap
 	});
 	stack.once("ready", function() {
-		console.log("+++");
 		var commands = [
 			"export EDITOR=/usr/bin/nano",
 			"mkdir -p /home/" + prompt2.history("username").value + "/.ssh",
@@ -224,10 +231,14 @@ function* destroy() {
 		stacksToDelete.push(builtStacks[ind - 1]);
 	}
 	_.each(stacksToDelete, function(stackData) {
-		var stack = new Stack(stackData.name);
+		var stack = new Stack({
+			name: stackData.name,
+			digitalOcean: client.services.digitalOcean,
+			namecheap: client.services.namecheap
+		});
 		stack.once("ready", function() {
 			stack.destroy().catch(function(err) {
-				console.log(err);
+				console.trace(err);
 			});
 		});
 	});
@@ -255,4 +266,3 @@ console.log("*************************************".rainbow);
 client.on("ready", function() {
 	run(stackathon);
 });
-// trivial
