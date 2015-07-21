@@ -1,3 +1,6 @@
 "use strict";
 
-module.exports = [require("./base")];
+module.exports = {
+	base: require("./base"),
+	docker: require("./docker")
+};

@@ -53,7 +53,7 @@ When you delete a stack, Stackathon:
 1. Deletes your stack from Digital Ocean
 2. Deletes the SSH key from Digital Ocean
 3. Deletes the SSH keys stored in `~/.ssh`
-4. Removed the IP address and key signiture for this stack from `~/.ssh/known_hosts` if present
+4. Removed the IP address and key signature for this stack from `~/.ssh/known_hosts` if present
 5. Removes the entry from `~/.ssh/config`
 
 ### Setting DNS Records With Namecheap (optional)

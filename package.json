@@ -2,19 +2,19 @@
 	"name": "stackathon",
 	"version": "1.0.0",
 	"description": "A command-line program for quickly building and deploying server and DNS configurations with Digital Ocean and Namecheap.",
-	"main": "index.js",
+	"main": "lib/index.js",
 	"scripts": {
-		"reinstall": "rm -rf node_modules;npm install",
-		"start": "node index.js"
+		"reinstall": "rm -rf node_modules;npm-cache install || npm install",
+		"start": "node lib/index.js"
 	},
 	"bin": {
-		"stackathon": "./index.js"
+		"stackathon": "./lib/index.js"
 	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/spencerbeggs/stackathon.git"
 	},
-	"author": "C. Spencer Beggs",
+	"author": "C. Spencer Beggs <spencer@beg.gs>",
 	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/spencerbeggs/stackathon/issues"
@@ -26,10 +26,10 @@
 		"commander": "^2.8.1",
 		"gen-run": "^0.1.2",
 		"handlebars": "^2.0.0",
+		"inquirer": "^0.8.5",
 		"lodash": "^3.5.0",
-		"moniker": "^0.1.2",
 		"password-generator": "^0.2.3",
-		"prompt": "^0.2.14",
+		"psl": "^1.1.5",
 		"request": "^2.53.0",
 		"ssh-keygen": "^0.2.1",
 		"ssh2": "^0.4.4",
