@@ -1,8 +1,10 @@
 "use strict";
 
 module.exports = {
-	name: "Docker",
-	questions: require("../base").questions,
+	name: "Docker 1.7.1 on Ubuntu 14.04",
+	image: "docker",
+	slug: "docker",
+	questions: require("../base").docker,
 	build: function(stack, base) {
 		return function() {
 			var commands = [
